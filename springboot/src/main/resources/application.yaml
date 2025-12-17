@@ -12,7 +12,13 @@ spring:
       target: 127.0.0.1:7233
     workersAutoDiscovery:
       packages: io.temporal.samples.springboot.hello
+
 # specific for samples
 samples:
   data:
     language: english
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,temporalworkerinfo

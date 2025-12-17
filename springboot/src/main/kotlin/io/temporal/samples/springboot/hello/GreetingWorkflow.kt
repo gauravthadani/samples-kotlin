@@ -6,6 +6,7 @@ import io.temporal.activity.ActivityOptions
 import io.temporal.common.RetryOptions
 import io.temporal.spring.boot.ActivityImpl
 import io.temporal.spring.boot.WorkflowImpl
+import io.temporal.workflow.Async
 import io.temporal.workflow.Workflow
 import io.temporal.workflow.WorkflowInterface
 import io.temporal.workflow.WorkflowMethod
@@ -33,11 +34,19 @@ class GreetingWorkflowImpl : GreetingWorkflow {
     )
 
     override fun greeting(name: String): String {
+        println("THREAD INFO AFTER: ${Thread.currentThread().name} - ${Thread.currentThread().contextClassLoader}")
         Workflow.getLogger(GreetingWorkflow::class.java).info(
             "Starting greeting at ${
                 Instant.ofEpochMilli(Workflow.currentTimeMillis()).atZone(ZoneId.systemDefault())
             }"
         )
+
+
+        listOf(1, 2, 3, 4, 5).map {
+            Async.procedure {
+                getActivities().composeGreeting("hello + $it", name)
+            }
+        }
 
         return getActivities().composeGreeting("hello", name)
 
