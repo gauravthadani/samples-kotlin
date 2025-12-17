@@ -12,3 +12,4 @@ plugins {
 
 rootProject.name = "samples-kotlin"
 include("app")
+include("springboot")

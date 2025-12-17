@@ -6,6 +6,7 @@ build/
 out/
 bin/
 app/src/main/resources/cert*
+app/src/main/resources/config.json
 
 # Kotlin
 *.kt.swp
