@@ -1,5 +1,7 @@
 package io.temporal.samples.springboot
 
+import io.temporal.api.enums.v1.WorkflowIdConflictPolicy
+import io.temporal.api.enums.v1.WorkflowIdReusePolicy
 import io.temporal.client.WorkflowClient
 import io.temporal.client.WorkflowOptions
 import io.temporal.samples.springboot.hello.GreetingWorkflow
