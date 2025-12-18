@@ -13,7 +13,7 @@ class Hello : CliktCommand() {
     override fun run() {
 
         if (mode =="worker"){
-            runWorker()
+            runTaskQueueReport()
         }
         else runStarter()
     }
@@ -22,12 +22,11 @@ class Hello : CliktCommand() {
 fun main(args: Array<String>) = Hello().main(args)
 
 
-fun runWorker() {
-    println("Running Worker")
+fun runTaskQueueReport() {
+    println("Running Report")
     worker()
 }
 
 fun runStarter() {
     println("Running Starter")
-    starter()
 }

@@ -5,6 +5,7 @@ spring:
     allow-bean-definition-overriding: true
   application:
     name: temporal-samples
+    default-task-queue: HelloSampleQueue
   # temporal specific configs
   temporal:
     namespace: default
@@ -12,6 +13,13 @@ spring:
       target: 127.0.0.1:7233
     workersAutoDiscovery:
       packages: io.temporal.samples.springboot.hello
+#    workers:
+#      - task-queue: "HelloSampleTaskQueue123"
+#        name: "GauravWorker"
+#        workflow-classes:
+#          - io.temporal.samples.springboot.hello.GreetingWorkflowImpl
+#        activity-beans:
+#          - GreetingActivities
 
 # specific for samples
 samples:

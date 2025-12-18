@@ -1,7 +1,6 @@
 package io.temporal.samples.springboot.hello
 
 import io.temporal.activity.ActivityInterface
-import io.temporal.activity.ActivityMethod
 import io.temporal.activity.ActivityOptions
 import io.temporal.common.RetryOptions
 import io.temporal.spring.boot.ActivityImpl
@@ -10,6 +9,9 @@ import io.temporal.workflow.Async
 import io.temporal.workflow.Workflow
 import io.temporal.workflow.WorkflowInterface
 import io.temporal.workflow.WorkflowMethod
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Component
 import java.time.Duration
 import java.time.Instant
@@ -21,7 +23,7 @@ interface GreetingWorkflow {
     fun greeting(name: String): String
 }
 
-@WorkflowImpl(taskQueues = ["HelloSampleTaskQueue"])
+@WorkflowImpl(taskQueues = ["HelloSampleQueue"])
 class GreetingWorkflowImpl : GreetingWorkflow {
     private fun getActivities() = Workflow.newActivityStub(
         GreetingActivities::class.java,

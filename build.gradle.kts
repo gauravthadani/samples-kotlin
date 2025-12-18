@@ -16,12 +16,12 @@ subprojects {
 
         // Common test dependencies
         "testImplementation"("org.jetbrains.kotlin:kotlin-test-junit5")
-        "testImplementation"("io.temporal:temporal-testing:1.32.1")
+        "testImplementation"("io.temporal:temporal-testing:${project.property("temporalVersion")}")
         "testRuntimeOnly"("org.junit.platform:junit-platform-launcher")
 
         // Temporal
-        "implementation"("io.temporal:temporal-sdk:1.32.1")
-        "implementation"("io.temporal:temporal-kotlin:1.32.1")
+        "implementation"("io.temporal:temporal-sdk:${project.property("temporalVersion")}")
+        "implementation"("io.temporal:temporal-kotlin:${project.property("temporalVersion")}")
 
         // Jackson
         "implementation"("com.fasterxml.jackson.module:jackson-module-kotlin")

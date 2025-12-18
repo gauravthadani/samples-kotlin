@@ -39,7 +39,7 @@ class HelloController {
             client.newWorkflowStub<GreetingWorkflow>(
                 GreetingWorkflow::class.java,
                 WorkflowOptions.newBuilder()
-                    .setTaskQueue("HelloSampleTaskQueue")
+                    .setTaskQueue("HelloSampleTaskQueue123")
                     .setWorkflowId("HelloSample")
                     .build()
             )

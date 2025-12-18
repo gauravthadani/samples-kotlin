@@ -1,5 +1,6 @@
 package io.temporal.samples.springboot
 
+import io.temporal.spring.boot.TemporalOptionsCustomizer
 import io.temporal.spring.boot.WorkerOptionsCustomizer
 import io.temporal.worker.WorkerOptions
 import io.temporal.worker.tuning.PollerBehaviorAutoscaling
@@ -23,6 +24,7 @@ class TemporalWorkerConfig {
     fun pollerAutoscalingCustomizer(): WorkerOptionsCustomizer {
         return WorkerOptionsCustomizer { optionsBuilder: WorkerOptions.Builder, _: String, _: String ->
             optionsBuilder.apply {
+
                 setWorkflowTaskPollersBehavior(PollerBehaviorAutoscaling(
                     1,
                     5,

@@ -28,7 +28,7 @@ dependencies {
     implementation("com.google.api.grpc:grpc-google-common-protos:2.29.0")
 
     // temporal dependencies
-    implementation("io.temporal:temporal-spring-boot-starter:1.32.1")
+    implementation("io.temporal:temporal-spring-boot-starter:${project.property("temporalVersion")}")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 

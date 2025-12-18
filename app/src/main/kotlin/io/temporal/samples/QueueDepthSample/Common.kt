@@ -8,11 +8,17 @@ import com.uber.m3.tally.RootScopeBuilder
 import com.uber.m3.tally.Scope
 import com.uber.m3.tally.StatsReporter
 import com.uber.m3.util.Duration
+import io.grpc.Metadata
+import io.grpc.stub.MetadataUtils
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
+import io.temporal.authorization.AuthorizationGrpcMetadataProvider
+import io.temporal.authorization.AuthorizationTokenSupplier
 import io.temporal.client.WorkflowClient
 import io.temporal.client.WorkflowClientOptions
+import io.temporal.common.converter.KotlinObjectMapperFactory.Companion.new
 import io.temporal.common.reporter.MicrometerClientStatsReporter
+import io.temporal.serviceclient.GrpcMetadataProvider
 import io.temporal.serviceclient.SimpleSslContextBuilder
 import io.temporal.serviceclient.WorkflowServiceStubs
 import io.temporal.serviceclient.WorkflowServiceStubsOptions
@@ -30,11 +36,25 @@ fun serviceStubs(
     localClient: Boolean = false
 ): WorkflowServiceStubs {
 
+//    val NS_KEY =
+//        Metadata.Key.of<String?>("temporal-namespace", Metadata.ASCII_STRING_MARSHALLER)
+//    val metadata = Metadata()
+//    metadata.put<String?>(NS_KEY, "gaurav-test.a2dd6")
     val newServiceStubs = WorkflowServiceStubs.newServiceStubs(
         WorkflowServiceStubsOptions.newBuilder().apply {
             if (!localClient) {
                 setEnableHttps(true)
                 setTarget(config.endpoint)
+//                setChannelInitializer{
+//                        ch -> ch.intercept(MetadataUtils.newAttachHeadersInterceptor(metadata))
+//                }
+//                addGrpcMetadataProvider(AuthorizationGrpcMetadataProvider { config.apiKey })
+
+                // 2) Add Authorization: Bearer <API_KEY>
+//                addGrpcMetadataProvider( ()->""))
+//                     new AuthorizationGrpcMetadataProvider(
+
+
                 when {
                     useApiKey ->
                         addApiKey { config.apiKey }
