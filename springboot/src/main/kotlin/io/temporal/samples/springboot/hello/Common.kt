@@ -8,8 +8,8 @@ import com.uber.m3.tally.RootScopeBuilder
 import com.uber.m3.tally.Scope
 import com.uber.m3.tally.StatsReporter
 import com.uber.m3.util.Duration
-import io.micrometer.prometheus.PrometheusConfig
-import io.micrometer.prometheus.PrometheusMeterRegistry
+import io.micrometer.prometheusmetrics.PrometheusConfig
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import io.temporal.client.WorkflowClient
 import io.temporal.client.WorkflowClientOptions
 import io.temporal.common.reporter.MicrometerClientStatsReporter

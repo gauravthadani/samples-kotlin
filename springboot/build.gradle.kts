@@ -1,9 +1,9 @@
 plugins {
     application
     id("com.google.protobuf") version "0.9.4"
-    id("org.springframework.boot") version "3.2.1"
-    id("io.spring.dependency-management") version "1.1.4"
-    kotlin("plugin.spring") version "1.9.22"
+    id("org.springframework.boot") version "3.5.6"
+    id("io.spring.dependency-management") version "1.1.7"
+    kotlin("plugin.spring") version "2.2.21"
 }
 
 dependencies {
@@ -16,7 +16,7 @@ dependencies {
     implementation(libs.guava)
 
     // Protobuf dependencies
-    implementation("com.google.protobuf:protobuf-java:3.25.1")
+    implementation("com.google.protobuf:protobuf-java:3.25.5")
     implementation("com.google.protobuf:protobuf-java-util:3.25.1")
 
     // gRPC dependencies
@@ -30,6 +30,7 @@ dependencies {
     implementation("io.temporal:temporal-spring-boot-starter:${project.property("temporalVersion")}")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.temporal:temporal-testing:${project.property("temporalVersion")}")
+}
 
 application {
     mainClass = "io.temporal.samples.springboot.SpringBootAppKt"
