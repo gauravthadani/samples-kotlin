@@ -20,9 +20,9 @@ dependencies {
     implementation("com.google.protobuf:protobuf-java-util:3.25.1")
 
     // gRPC dependencies
-    implementation("io.grpc:grpc-protobuf:1.60.0")
-    implementation("io.grpc:grpc-stub:1.60.0")
-    implementation("io.grpc:grpc-netty-shaded:1.60.0")
+    implementation("io.grpc:grpc-protobuf:${project.property("grpcVersion")}")
+    implementation("io.grpc:grpc-stub:${project.property("grpcVersion")}")
+    implementation("io.grpc:grpc-netty-shaded:${project.property("grpcVersion")}")
     implementation("javax.annotation:javax.annotation-api:1.3.2")
     implementation("com.google.api.grpc:grpc-google-common-protos:2.29.0")
 
