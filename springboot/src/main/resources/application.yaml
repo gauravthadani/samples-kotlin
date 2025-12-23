@@ -5,7 +5,6 @@ spring:
     allow-bean-definition-overriding: true
   application:
     name: temporal-samples
-    default-task-queue: HelloSampleQueue
   # temporal specific configs
   temporal:
     namespace: default

@@ -36,10 +36,10 @@ class HelloController {
     )
     fun helloSample(@RequestBody person: String): ResponseEntity<String> {
         val workflow: GreetingWorkflow =
-            client.newWorkflowStub<GreetingWorkflow>(
+            client.newWorkflowStub(
                 GreetingWorkflow::class.java,
                 WorkflowOptions.newBuilder()
-                    .setTaskQueue("HelloSampleTaskQueue123")
+                    .setTaskQueue("HelloSampleTaskQueue")
                     .setWorkflowId("HelloSample")
                     .build()
             )

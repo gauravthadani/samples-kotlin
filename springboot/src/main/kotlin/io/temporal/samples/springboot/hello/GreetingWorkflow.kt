@@ -23,7 +23,7 @@ interface GreetingWorkflow {
     fun greeting(name: String): String
 }
 
-@WorkflowImpl(taskQueues = ["HelloSampleQueue"])
+@WorkflowImpl(taskQueues = ["HelloSampleTaskQueue"])
 class GreetingWorkflowImpl : GreetingWorkflow {
     private fun getActivities() = Workflow.newActivityStub(
         GreetingActivities::class.java,

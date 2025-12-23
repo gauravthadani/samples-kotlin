@@ -14,7 +14,6 @@ dependencies {
 
     // Module specific dependencies
     implementation(libs.guava)
-    implementation(libs.junit.jupiter.engine)
 
     // Protobuf dependencies
     implementation("com.google.protobuf:protobuf-java:3.25.1")
@@ -30,7 +29,7 @@ dependencies {
     // temporal dependencies
     implementation("io.temporal:temporal-spring-boot-starter:${project.property("temporalVersion")}")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-}
+    testImplementation("io.temporal:temporal-testing:${project.property("temporalVersion")}")
 
 application {
     mainClass = "io.temporal.samples.springboot.SpringBootAppKt"
