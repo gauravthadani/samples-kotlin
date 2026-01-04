@@ -8,14 +8,14 @@ import com.github.ajalt.clikt.parameters.options.prompt
 
 
 class Hello : CliktCommand() {
-    val mode: String by option().prompt("Mode").help("worker or starter")
+//    val mode: String by option().prompt("Mode").help("worker or starter")
 
     override fun run() {
 
-        if (mode =="worker"){
+//        if (mode =="worker"){
             runTaskQueueReport()
-        }
-        else runStarter()
+//        }
+//        else runStarter()
     }
 }
 

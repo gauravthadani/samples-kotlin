@@ -25,7 +25,7 @@ dependencies {
 }
 
 application {
-    mainClass = "com.example.cert_rotation.AppKt"
+    mainClass = "io.temporal.samples.hello.AppKt"
 }
 
 // Configure protobuf plugin

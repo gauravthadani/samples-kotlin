@@ -47,12 +47,15 @@ class Starter(
 }
 
 fun starter() {
-    val starter = Starter(localClient(namespace = "gaurav-test.a2dd6"), startDelay = Duration.ofSeconds(0))
-    val arg = "Thadani  ${UUID.randomUUID()}"
-    starter.spawn(arg)
+    val starter = Starter(localClient(namespace = "gaurav-test.a2dd6", withMetrics = true), startDelay = Duration.ofSeconds(0),)
+
+    (0..1).forEach {
+        val arg = "Thadani  ${UUID.randomUUID()}"
+        starter.spawn(arg)
+    }
 
 
-    println("Created ${arg}")
+
 }
 
 

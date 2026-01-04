@@ -3,24 +3,35 @@ package io.temporal.samples.QueueDepthSample
 
 import io.temporal.api.taskqueue.v1.TaskQueue
 import io.temporal.api.workflowservice.v1.DescribeTaskQueueRequest
+import io.temporal.api.workflowservice.v1.ListSchedulesRequest
+import io.temporal.client.schedules.ScheduleClient
+import kotlin.streams.toList
 
 const val TASK_QUEUE = "HelloActivityTaskQueue"
 
 fun worker() {
-    val workflowClient = client(
+    val workflowClient = localClient(
         withMetrics = false,
-        namespace = "gaurav-test.a2dd6"
+        namespace = "default",
     )
-    val describeTaskQueueResponse = workflowClient.workflowServiceStubs.blockingStub().describeTaskQueue(
-        DescribeTaskQueueRequest.newBuilder()
-            .setTaskQueue(TaskQueue.newBuilder().setName(TASK_QUEUE).build())
-            .setReportStats(true)
-            .setNamespace("gaurav-test.a2dd6")
-            .build()
-    )
+//    val describeTaskQueueResponse = workflowClient.workflowServiceStubs.blockingStub().describeTaskQueue(
+//        DescribeTaskQueueRequest.newBuilder()
+//            .setTaskQueue(TaskQueue.newBuilder().setName(TASK_QUEUE).build())
+//            .setReportStats(true)
+//            .setNamespace("gaurav-test.a2dd6")
+//            .build()
+//    )
 
-    println(describeTaskQueueResponse)
-    describeTaskQueueResponse.stats.getApproximateBacklogCount()
+    ScheduleClient.newInstance(workflowClient.workflowServiceStubs).listSchedules(10).toList().map {
+        it->
+        println(it.schedule)
+    }
+//    ScheduleClient.newInstance(workflowClient.workflowServiceStubs).listSchedules(
+//        "",100
+//    )
+
+//    println(describeTaskQueueResponse)
+//    describeTaskQueueResponse.stats.getApproximateBacklogCount()
 }
 
 
