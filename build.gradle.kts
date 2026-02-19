@@ -30,6 +30,9 @@ subprojects {
         "implementation"("com.sksamuel.hoplite:hoplite-core:2.9.0")
         "implementation"("com.sksamuel.hoplite:hoplite-json:2.9.0")
 
+        // Coroutines
+        "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+
         // CLI
         "implementation"("com.github.ajalt.clikt:clikt:5.0.1")
 

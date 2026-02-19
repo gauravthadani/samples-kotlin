@@ -25,7 +25,7 @@ dependencies {
 }
 
 application {
-    mainClass = "io.temporal.samples.hello.AppKt"
+    mainClass = (project.findProperty("mainClass") as String?) ?: "io.temporal.samples.hello.AppKt"
 }
 
 // Configure protobuf plugin

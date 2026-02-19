@@ -10,27 +10,27 @@ import kotlin.streams.toList
 const val TASK_QUEUE = "HelloActivityTaskQueue"
 
 fun worker() {
-    val workflowClient = localClient(
+    val workflowClient = client(
         withMetrics = false,
-        namespace = "default",
+        namespace = "gaurav-test.a2dd6",
     )
-//    val describeTaskQueueResponse = workflowClient.workflowServiceStubs.blockingStub().describeTaskQueue(
-//        DescribeTaskQueueRequest.newBuilder()
-//            .setTaskQueue(TaskQueue.newBuilder().setName(TASK_QUEUE).build())
-//            .setReportStats(true)
-//            .setNamespace("gaurav-test.a2dd6")
-//            .build()
-//    )
+    val describeTaskQueueResponse = workflowClient.workflowServiceStubs.blockingStub().describeTaskQueue(
+        DescribeTaskQueueRequest.newBuilder()
+            .setTaskQueue(TaskQueue.newBuilder().setName(TASK_QUEUE).build())
+            .setReportStats(true)
+            .setNamespace("gaurav-test.a2dd6")
+            .build()
+    )
+//
+//    ScheduleClient.newInstance(workflowClient.workflowServiceStubs).listSchedules(10).toList().map {
+//        it->
+//        println(it.schedule)
+//    }
+////    ScheduleClient.newInstance(workflowClient.workflowServiceStubs).listSchedules(
+////        "",100
+////    )
 
-    ScheduleClient.newInstance(workflowClient.workflowServiceStubs).listSchedules(10).toList().map {
-        it->
-        println(it.schedule)
-    }
-//    ScheduleClient.newInstance(workflowClient.workflowServiceStubs).listSchedules(
-//        "",100
-//    )
-
-//    println(describeTaskQueueResponse)
+    println(describeTaskQueueResponse)
 //    describeTaskQueueResponse.stats.getApproximateBacklogCount()
 }
 

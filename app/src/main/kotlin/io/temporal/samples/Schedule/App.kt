@@ -1,4 +1,4 @@
-package io.temporal.samples.QueueDepthSample
+package io.temporal.samples.Schedule
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.main
@@ -8,7 +8,7 @@ class Hello : CliktCommand() {
 //    val mode: String by option().prompt("Mode").help("worker or starter")
 
     override fun run() {
-        println("Running Report")
+        println("Schedule")
         worker()
     }
 }

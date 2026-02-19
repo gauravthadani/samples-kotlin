@@ -5,6 +5,7 @@ import io.temporal.api.enums.v1.DescribeTaskQueueMode
 import io.temporal.api.enums.v1.TaskQueueType
 import io.temporal.api.taskqueue.v1.TaskQueue
 import io.temporal.api.workflowservice.v1.DescribeTaskQueueRequest
+import io.temporal.samples.Schedule.localClient
 import io.temporal.worker.WorkerFactory
 import io.temporal.worker.WorkerOptions
 //import io.temporal.worker.tuning.PollerBehaviorAutoscaling
@@ -13,29 +14,25 @@ import kotlin.system.exitProcess
 
 
 fun worker() {
-    val workflowClient = client(
+    val workflowClient = localClient(
         withMetrics = false,
-        namespace = "gaurav-test.a2dd6"
+        namespace = "gaurav-mrn.a2dd6"
     )
-//    val describeTaskQueueResponse = workflowClient.workflowServiceStubs.blockingStub().describeTaskQueue(
-//        DescribeTaskQueueRequest.newBuilder()
-//            .setTaskQueue(TaskQueue.newBuilder().setName(TASK_QUEUE).build())
-//            .setNamespace("gaurav-test.a2dd6")
-//            .build()
-//    )
-//
-//    println(describeTaskQueueResponse)
 
     WorkerFactory.newInstance(
         workflowClient
     ).also { factory ->
         factory.newWorker(TASK_QUEUE, WorkerOptions.newBuilder().apply {
             setDefaultHeartbeatThrottleInterval(Duration.ofSeconds(10))
+//            setMaxTaskQueueActivitiesPerSecond(1)
 
 
         }.build()).apply {
             registerWorkflowImplementationTypes(GreetingWorkflowImpl::class.java)
+            registerWorkflowImplementationTypes(SignallerWorkflowImpl::class.java)
             registerActivitiesImplementations(GreetingActivitiesImpl())
+            registerActivitiesImplementations(SignalActivitiesImpl())
+            factory.suspendPolling()
         }
     }.start()
 }

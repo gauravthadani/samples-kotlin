@@ -1,4 +1,4 @@
-package io.temporal.samples.QueueDepthSample
+package io.temporal.samples.Schedule
 
 import com.sksamuel.hoplite.ConfigLoaderBuilder
 import com.sksamuel.hoplite.addResourceSource
@@ -31,25 +31,11 @@ fun serviceStubs(
     localClient: Boolean = false
 ): WorkflowServiceStubs {
 
-//    val NS_KEY =
-//        Metadata.Key.of<String?>("temporal-namespace", Metadata.ASCII_STRING_MARSHALLER)
-//    val metadata = Metadata()
-//    metadata.put<String?>(NS_KEY, "gaurav-test.a2dd6")
     val newServiceStubs = WorkflowServiceStubs.newServiceStubs(
         WorkflowServiceStubsOptions.newBuilder().apply {
             if (!localClient) {
                 setEnableHttps(true)
                 setTarget(config.endpoint)
-//                setChannelInitializer{
-//                        ch -> ch.intercept(MetadataUtils.newAttachHeadersInterceptor(metadata))
-//                }
-//                addGrpcMetadataProvider(AuthorizationGrpcMetadataProvider { config.apiKey })
-
-                // 2) Add Authorization: Bearer <API_KEY>
-//                addGrpcMetadataProvider( ()->""))
-//                     new AuthorizationGrpcMetadataProvider(
-
-
                 when {
                     useApiKey ->{
                         addApiKey { config.apiKey }

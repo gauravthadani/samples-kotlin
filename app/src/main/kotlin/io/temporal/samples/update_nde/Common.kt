@@ -1,4 +1,4 @@
-package io.temporal.samples.QueueDepthSample
+package io.temporal.samples.update_nde
 
 import com.sksamuel.hoplite.ConfigLoaderBuilder
 import com.sksamuel.hoplite.addResourceSource
@@ -8,19 +8,23 @@ import com.uber.m3.tally.RootScopeBuilder
 import com.uber.m3.tally.Scope
 import com.uber.m3.tally.StatsReporter
 import com.uber.m3.util.Duration
-import io.grpc.Metadata
-import io.grpc.stub.MetadataUtils
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
 import io.temporal.client.WorkflowClient
 import io.temporal.client.WorkflowClientOptions
+import io.temporal.common.converter.DataConverter
+import io.temporal.common.converter.DefaultDataConverter
 import io.temporal.common.reporter.MicrometerClientStatsReporter
+import io.temporal.serviceclient.SimpleSslContextBuilder
 import io.temporal.serviceclient.WorkflowServiceStubs
 import io.temporal.serviceclient.WorkflowServiceStubsOptions
 import java.io.IOException
 import java.io.InputStream
 import java.net.InetSocketAddress
 
+fun DataConverter(): DataConverter {
+    return DefaultDataConverter.newDefaultInstance()
+}
 
 fun readFileAsInputStream(fileName: String): InputStream = object {}.javaClass.getResourceAsStream("/$fileName")!!
 
@@ -31,28 +35,22 @@ fun serviceStubs(
     localClient: Boolean = false
 ): WorkflowServiceStubs {
 
-//    val NS_KEY =
-//        Metadata.Key.of<String?>("temporal-namespace", Metadata.ASCII_STRING_MARSHALLER)
-//    val metadata = Metadata()
-//    metadata.put<String?>(NS_KEY, "gaurav-test.a2dd6")
-    val newServiceStubs = WorkflowServiceStubs.newServiceStubs(
+    return WorkflowServiceStubs.newServiceStubs(
         WorkflowServiceStubsOptions.newBuilder().apply {
             if (!localClient) {
                 setEnableHttps(true)
                 setTarget(config.endpoint)
-//                setChannelInitializer{
-//                        ch -> ch.intercept(MetadataUtils.newAttachHeadersInterceptor(metadata))
-//                }
-//                addGrpcMetadataProvider(AuthorizationGrpcMetadataProvider { config.apiKey })
-
-                // 2) Add Authorization: Bearer <API_KEY>
-//                addGrpcMetadataProvider( ()->""))
-//                     new AuthorizationGrpcMetadataProvider(
-
-
                 when {
-                    useApiKey ->{
+                    useApiKey ->
                         addApiKey { config.apiKey }
+
+                    else -> {
+                        val clientCert = readFileAsInputStream("client.pem")
+                        val clientKey = readFileAsInputStream("client.key")
+                        setSslContext(SimpleSslContextBuilder.forPKCS8(clientCert, clientKey).build())
+                        setChannelInitializer { channel ->
+                            channel.overrideAuthority("gaurav-mrn.a2dd6.tmprl.cloud")
+                        }
                     }
                 }
             }
@@ -67,22 +65,25 @@ fun serviceStubs(
                 val scrapeEndpoint: HttpServer = startPrometheusScrapeEndpoint(registry, 8079)
                 Runtime.getRuntime().addShutdownHook(Thread { scrapeEndpoint.stop(1) })
             }
+            setSystemInfoTimeout(java.time.Duration.ofSeconds(10))
         }.build()
     )
-    return newServiceStubs
 }
 
 fun localClient(withMetrics: Boolean = false, namespace: String? = null) = WorkflowClient.newInstance(
     serviceStubs(withMetrics = withMetrics, localClient = true),
     WorkflowClientOptions.newBuilder().apply {
+
+        setDataConverter(DataConverter())
         if (!namespace.isNullOrEmpty())
             setNamespace("default")
     }.build()
 )
 
 fun client(withMetrics: Boolean = false, namespace: String? = null) = WorkflowClient.newInstance(
-    serviceStubs(useApiKey = true, withMetrics = withMetrics),
+    serviceStubs(useApiKey = false, withMetrics = withMetrics),
     WorkflowClientOptions.newBuilder().apply {
+        if (!namespace.isNullOrEmpty())
             setNamespace(namespace)
     }.build()
 )
