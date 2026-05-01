@@ -18,6 +18,25 @@ fun worker() {
     ).also { factory ->
         factory.newWorker(TASK_QUEUE, WorkerOptions.newBuilder().build()).apply {
             registerWorkflowImplementationTypes(GreetingWorkflowImpl::class.java)
+            registerActivitiesImplementations(GreetingActivitiesLocalImpl())
+
+            factory.suspendPolling()
+        }
+    }.start()
+}
+
+
+
+fun activityWorker() {
+    val workflowClient = localClient(
+        withMetrics = false,
+        namespace = "gaurav-mrn.a2dd6"
+    )
+
+    WorkerFactory.newInstance(
+        workflowClient
+    ).also { factory ->
+        factory.newWorker(TASK_QUEUE, WorkerOptions.newBuilder().build()).apply {
             registerActivitiesImplementations(GreetingActivitiesImpl())
             factory.suspendPolling()
         }

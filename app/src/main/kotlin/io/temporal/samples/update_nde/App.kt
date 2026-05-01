@@ -21,6 +21,10 @@ class Hello : CliktCommand() {
         if (mode == "worker") {
             runWorker()
         }
+
+        if (mode == "activityWorker") {
+            activityWorker()
+        }
         if (mode == "starter") {
             runStarter()
         }
@@ -35,10 +39,16 @@ fun runWorker() {
     worker()
 }
 
+
+fun runActivityWorker() {
+    println("Running Worker")
+    activityWorker()
+}
+
 fun runStarter() {
     println("Running Starter")
     val id = starter()
-    runSignaller(id)
+//    runSignaller(id)
 
 }
 
