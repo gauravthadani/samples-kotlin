@@ -5,6 +5,7 @@ import io.temporal.activity.ActivityOptions
 import io.temporal.common.RetryOptions
 import io.temporal.common.SearchAttributeKey
 import io.temporal.workflow.Async
+import io.temporal.workflow.Promise
 import io.temporal.workflow.Workflow
 import io.temporal.workflow.WorkflowInterface
 import io.temporal.workflow.WorkflowMethod
@@ -23,61 +24,75 @@ class GreetingWorkflowImpl : GreetingWorkflow {
         logger.info("Workflow is initialized")
     }
 
-    private fun getActivities() = Workflow.newActivityStub(
+    private fun activityStub() = Workflow.newActivityStub(
         MyActivityInterface::class.java,
         ActivityOptions.newBuilder()
             .setStartToCloseTimeout(Duration.ofSeconds(45))
-            .setRetryOptions(
-                RetryOptions.newBuilder().build()
-            )
+            .setRetryOptions(RetryOptions.newBuilder().build())
             .build()
     )
 
     private fun untypedStub() = Workflow.newUntypedActivityStub(
         ActivityOptions.newBuilder()
             .setStartToCloseTimeout(Duration.ofSeconds(45))
-            .setRetryOptions(
-                RetryOptions.newBuilder().build()
-            )
+            .setRetryOptions(RetryOptions.newBuilder().build())
             .build()
     )
 
     val WORKFLOW_VERSIONS = SearchAttributeKey.forKeywordList("WorkflowVersions")
-    val MOST_RECENT_STARTED_ACTIVITY = SearchAttributeKey.forKeywordList("MostRecentStartedActivity")
 
-    val activities = getActivities()
+    val activities = activityStub()
+    private lateinit var workflowName: String
 
     override fun greeting(name: String): String {
+        workflowName = name
         logger.info("Workflow started")
         "interrupt-curing-on-ato-transfer".versionMethod(1)
         "flatten-post-submission".versionMethod(1)
         "most-recent-started-activity-search-attribute-added".versionMethod(1)
-        wrapActivityWithSA(activities::ShouldMarkAsRegZ, name)
-        wrapActivityWithSA(activities::SecureAccessDevice, name)
-        wrapActivityWithSA(activities::ShouldWaitForLoanPaused, name)
-        wrapActivityWithSA(activities::ShouldRetrieveClaimComponents, name)
-        wrapActivityWithSA(activities::GetClaimComponents, name)
-        wrapActivityWithSA(activities::SaveRecordsOnInvestigationStart, name)
-        wrapActivityWithSA(activities::PublishEventsOnInvestigationStart, name)
-        wrapActivityWithSA(activities::StartRegulatoryWorkflows, name)
-        Async.procedure {
-            wrapUntypeActivityWithSA("IsAdditionalEvidenceCollectionEnabled", name)
-            "flatten-ato-transfer".versionMethod(1)
-            "flatten-resolved-externally".versionMethod(1)
-            wrapActivityWithSA(activities::GetResolvedExternallyWorkflowSleepDurationSeconds, name)
-        }
+
+        // Sequential phase: events 15-66 in the customer's history. Each call
+        // blocks its WT until the activity completes; the interceptor inserts
+        // the MostRecentStartedActivity upsert immediately before every schedule.
+        activities.ShouldMarkAsRegZ("hello", workflowName)
+        activities.SecureAccessDevice("hello", workflowName)
+        activities.ShouldWaitForLoanPaused("hello", workflowName)
+        activities.ShouldRetrieveClaimComponents("hello", workflowName)
+        activities.GetClaimComponents("hello", workflowName)
+        activities.SaveRecordsOnInvestigationStart("hello", workflowName)
+        activities.PublishEventsOnInvestigationStart("hello", workflowName)
+        activities.StartRegulatoryWorkflows("hello", workflowName)
+
+        // Async phase: events 70-86 in the customer's history. The block runs
+        // through Async.function so its commands land in a single workflow task
+        // with the interleaved upsert → activity-schedule → marker → marker
+        // ordering that drives the TMPRL1100 failure.
+        executeParallelWorkflows()
+
         Workflow.await { false }
         return "hello world"
     }
 
-    private fun wrapUntypeActivityWithSA(fName: String, name: String) {
-        Workflow.upsertTypedSearchAttributes(MOST_RECENT_STARTED_ACTIVITY.valueSet(listOf(fName)))
-        untypedStub().executeAsync(fName, String::class.java, "hello", name)
+    private fun executeParallelWorkflows() {
+        val activityGroups =
+            buildList<() -> Unit> {
+                add(::resolvedExternallyWorkflow)
+            }
+
+        val promises = activityGroups.map { Async.function { it() } }
+        Promise.anyOf(promises).get()
     }
 
-    private fun wrapActivityWithSA(f: (String, String) -> String, name: String) {
-        Workflow.upsertTypedSearchAttributes(MOST_RECENT_STARTED_ACTIVITY.valueSet(listOf(f.toString())))
-        f("hello", name)
+    private fun resolvedExternallyWorkflow() {
+        untypedStub().executeAsync(
+            "IsAdditionalEvidenceCollectionEnabled",
+            String::class.java,
+            "hello",
+            workflowName,
+        )
+        "flatten-ato-transfer".versionMethod(1)
+        "flatten-resolved-externally".versionMethod(1)
+        activities.GetResolvedExternallyWorkflowSleepDurationSeconds("hello", workflowName)
     }
 
     private fun String.versionMethod(version: Int): Int {
@@ -113,8 +128,4 @@ interface MyActivityInterface {
     fun StartRegulatoryWorkflows(greeting: String, name: String): String
     fun IsAdditionalEvidenceCollectionEnabled(greeting: String, name: String): String
     fun GetResolvedExternallyWorkflowSleepDurationSeconds(greeting: String, name: String): String
-
 }
-
-
-

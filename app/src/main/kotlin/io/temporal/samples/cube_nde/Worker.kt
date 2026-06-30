@@ -3,6 +3,7 @@ package io.temporal.samples.cube_nde
 
 import io.temporal.samples.Schedule.localClient
 import io.temporal.worker.WorkerFactory
+import io.temporal.worker.WorkerFactoryOptions
 import io.temporal.worker.WorkerOptions
 import io.temporal.worker.WorkflowImplementationOptions
 
@@ -12,8 +13,12 @@ fun worker() {
         withMetrics = false,
     )
 
+    val factoryOptions = WorkerFactoryOptions.newBuilder()
+        .setWorkerInterceptors(VersionSearchAttributeInterceptor())
+        .build()
+
     WorkerFactory.newInstance(
-        workflowClient
+        workflowClient, factoryOptions
     ).also { factory ->
         factory.newWorker(TASK_QUEUE, WorkerOptions.newBuilder().build()).apply {
 
